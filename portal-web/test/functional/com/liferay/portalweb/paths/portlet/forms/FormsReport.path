@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <title>FormsReport</title>
+</head>
+
+<body>
+    <table cellpadding="1" cellspacing="1" border="1">
+        <thead>
+            <tr>
+                <td rowspan="1" colspan="3">FormsReport</td>
+            </tr>
+        </thead>
+        <tbody>
+            <!--SUMMARY ENTRIES-->
+            <tr>
+                <td>FORM_ENTRIES_BUTTON</td>
+                <td>//*[@type='button' and contains(text(),'Entries')]</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>IMAGE_CHART_ENTRY</td>
+                <td>//*[name()='svg']//*[name()='rect']</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

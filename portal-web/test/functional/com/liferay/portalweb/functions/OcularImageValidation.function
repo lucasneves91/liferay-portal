@@ -1,0 +1,16 @@
+@default = "ocularImageValidation"
+definition {
+
+	function ocularImageValidation {
+		WaitForSPARefresh();
+
+		selenium.ocularConfig();
+
+        selenium.ocularImageValidation();
+
+		selenium.assertJavaScriptErrors();
+
+		selenium.assertLiferayErrors();
+	}
+
+}

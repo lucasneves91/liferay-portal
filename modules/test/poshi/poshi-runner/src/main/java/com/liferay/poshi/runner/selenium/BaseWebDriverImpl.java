@@ -138,13 +138,18 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		System.setProperty("java.awt.headless", "false");
 
 		String outputDirName = _OUTPUT_DIR_NAME;
-		String sikuliImagesDirName =
-			_TEST_DEPENDENCIES_DIR_NAME + "//sikuli//linux//";
+		String ocularSnapImageDirName = _TEST_DEPENDENCIES_DIR_NAME + "//ocular//linux//snap";
+		String ocularResultImageDirName = _TEST_DEPENDENCIES_DIR_NAME + "//ocular//linux//result";
+		String sikuliImagesDirName = _TEST_DEPENDENCIES_DIR_NAME + "//sikuli//linux//";
 		String testDependenciesDirName = _TEST_DEPENDENCIES_DIR_NAME;
 
 		if (OSDetector.isApple()) {
 			sikuliImagesDirName = StringUtil.replace(
 				sikuliImagesDirName, "linux", "osx");
+			ocularSnapImageDirName = StringUtil.replace(
+				ocularSnapImageDirName, "linux", "osx");
+			ocularResultImageDirName = StrinUtil.replace(
+				ocularResultImageDirName, "linux", "osx")
 		}
 		else if (OSDetector.isWindows()) {
 			outputDirName = StringUtil.replace(outputDirName, "//", "\\");
@@ -153,6 +158,14 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 				sikuliImagesDirName, "//", "\\");
 			sikuliImagesDirName = StringUtil.replace(
 				sikuliImagesDirName, "linux", "windows");
+			ocularSnapImageDirName = StringUtil.replace(
+				ocularSnapImageDirName, "//", "\\");
+			ocularSnapImageDirName = StringUtil.replace(
+				ocularSnapImageDirName, "linux", "windows");
+			ocularResultImageDirName = StringUtil.replace(
+				ocularResultImageDirNamem, "//", "\\");
+			ocularResultImageDirName = StringUtil.replace(
+				ocularResultImageDirNamem, "linux", "windows");
 
 			testDependenciesDirName = StringUtil.replace(
 				testDependenciesDirName, "//", "\\");
@@ -160,6 +173,8 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 
 		_outputDirName = outputDirName;
 		_sikuliImagesDirName = sikuliImagesDirName;
+		_ocularSnapImageDirName = ocularSnapImageDirName;
+		_ocularResultImageDirName = ocularResultImageDirName;
 		_testDependenciesDirName = testDependenciesDirName;
 
 		WebDriver.Options options = webDriver.manage();
@@ -1419,6 +1434,10 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 		return _sikuliImagesDirName;
 	}
 
+	public String getOcularSnapImageDirName() { return _ocularSnapImageDirName; }
+
+	public String getOcularResultImageDirName() { return _ocularResultImageDirName; }
+
 	@Override
 	public String getTestDependenciesDirName() {
 		return _testDependenciesDirName;
@@ -2183,6 +2202,34 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	@Override
 	public Navigation navigate() {
 		return _webDriver.navigate();
+	}
+
+
+	public void ocularConfig() {
+		Ocular.config()
+			.snapshotPath(Paths.get(".", _ocularSnapImageDirName))
+			.resultPath(Paths.get(".", _ocularResultImageDirName))
+			.globalSimilarity(80)
+			.saveSnapshot(true);
+	}
+
+	public boolean ocularImageValidation(String locator, String image) {
+		String filePath =
+			FileUtil.getSeparator() + getOcularSnapImageDirName() + image;
+
+		File file = new File(
+			LiferaySeleniumUtil.getSourceDirFilePath(filePath));
+
+		WebElement webElement = getWebElement(locator);
+
+		OcularResult result = Ocular.snapshot()
+			.from(filePath)
+			.sample()
+			.using(this._webDriver)
+			.element(webElement)
+			.compare();
+
+		return result.isEqualsImages();
 	}
 
 	@Override
@@ -4648,7 +4695,9 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 	private String _primaryTestSuiteName;
 	private int _screenshotCount;
 	private int _screenshotErrorCount;
-	private final String _sikuliImagesDirName;
+	private final String _sikuliImageDirName;
+	private final String _ocularSnapImageDirName;
+	private final String _ocularResultImageDirName;
 	private final String _testDependenciesDirName;
 	private final WebDriver _webDriver;
 

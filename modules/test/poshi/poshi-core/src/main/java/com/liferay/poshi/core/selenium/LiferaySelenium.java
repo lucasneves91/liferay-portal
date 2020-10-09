@@ -226,6 +226,10 @@ public interface LiferaySelenium {
 
 	public String getSikuliImagesDirName();
 
+	public  String getOcularImageSnapDirName();
+
+	public String getOcularImageResultDirName();
+
 	public String getTestDependenciesDirName();
 
 	public String getTestName();
@@ -350,6 +354,10 @@ public interface LiferaySelenium {
 	public void mouseUp(String locator);
 
 	public void mouseUpAt(String locator, String coordString);
+
+	public void ocularConfig();
+
+	public void ocularAssertElementPresent(String fileName, WebElement element) throws Exception;
 
 	public void open(String url) throws Exception;
 
