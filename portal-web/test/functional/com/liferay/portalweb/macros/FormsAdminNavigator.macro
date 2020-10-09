@@ -176,6 +176,18 @@ definition {
 		LexiconEntry.gotoEllipsisMenuItem(menuItem = "View Entries");
 	}
 
+	macro gotoEntries {
+		var key_assetTitle = "Entries";
+
+		WaitForElementPresent(
+			locator1 = "NavBar#ASSET_TITLE",
+			value1 = "Entries");
+
+		AssertClick(
+			locator1 = "NavBar#ASSET_TITLE",
+			value1 = "Entries");
+	}
+
 	macro openPublishURL {
 		FormsAdminNavigator.gotoPublishCopyURLLink();
 
