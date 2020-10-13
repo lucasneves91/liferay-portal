@@ -12,29 +12,6 @@
  * details.
  */
 
-package com.liferay.portal.file.install.internal.manifest;
-
-/**
- * // TODO Temporary class needs to be removed once the refactor is complete
- *
- * @author Matthew Tambara
- */
-public class Directive {
-
-	public Directive(String name, String value) {
-		_name = name;
-		_value = value;
-	}
-
-	public String getName() {
-		return _name;
-	}
-
-	public String getValue() {
-		return _value;
-	}
-
-	private final String _name;
-	private final String _value;
-
-}
+module.exports = {
+	extends: ['@liferay/eslint-config/metal'],
+};

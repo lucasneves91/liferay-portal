@@ -12,7 +12,25 @@
  * details.
  */
 
-/* eslint-disable */
 module.exports = {
-	presets: ['@babel/preset-env', '@babel/preset-react'],
+	globals: {
+		YT: true,
+		configuration: true,
+		fragmentElement: true,
+		fragmentNamespace: true,
+	},
+	overrides: [
+		{
+			files: '**/src/**/*.js',
+			rules: {
+
+				// For IE compatibility because JS here doesn't get transpiled.
+
+				'notice/notice': 'off',
+				'object-shorthand': 'off',
+				'prefer-arrow-callback': 'off',
+				'prefer-object-spread': 'off',
+			},
+		},
+	],
 };

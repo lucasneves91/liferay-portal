@@ -12,9 +12,7 @@ definition {
 		}
 
 		else {
-
 			LexiconEntry.gotoAddMenuItem(menuItem = "Dynamic Collection");
-
 		}
 
 		PortletEntry.inputText(
@@ -72,9 +70,7 @@ definition {
 		}
 
 		else {
-
 			LexiconEntry.gotoAddMenuItem(menuItem = "Manual Collection");
-
 		}
 
 		PortletEntry.inputText(
@@ -370,7 +366,6 @@ definition {
 
 		if (isSet(entryList)) {
 			for (var assetName : list "${entryList}") {
-
 				LexiconEntry.selectEntry(rowEntry = "${assetName}");
 
 				Pause(locator1 = "3000");

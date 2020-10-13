@@ -65,6 +65,12 @@ public class DispatchLogLocalServiceImpl
 	}
 
 	@Override
+	public DispatchLog fetchLatestDispatchLog(long dispatchTriggerId) {
+		return dispatchLogPersistence.fetchByDispatchTriggerId_First(
+			dispatchTriggerId, null);
+	}
+
+	@Override
 	public List<DispatchLog> getDispatchLogs(
 		long dispatchTriggerId, int start, int end) {
 

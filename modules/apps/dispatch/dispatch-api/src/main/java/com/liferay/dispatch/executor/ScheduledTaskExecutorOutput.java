@@ -12,29 +12,40 @@
  * details.
  */
 
-package com.liferay.portal.file.install.internal.manifest;
+package com.liferay.dispatch.executor;
+
+import java.nio.charset.StandardCharsets;
 
 /**
- * // TODO Temporary class needs to be removed once the refactor is complete
- *
- * @author Matthew Tambara
+ * @author Matija Petanjek
  */
-public class Attribute {
+public class ScheduledTaskExecutorOutput {
 
-	public Attribute(String name, String value) {
-		_name = name;
-		_value = value;
+	public String getError() {
+		return _error;
 	}
 
-	public String getName() {
-		return _name;
+	public String getOutput() {
+		return _output;
 	}
 
-	public String getValue() {
-		return _value;
+	public void setError(byte[] error) {
+		_error = new String(error, StandardCharsets.UTF_8);
 	}
 
-	private final String _name;
-	private final String _value;
+	public void setError(String error) {
+		_error = error;
+	}
+
+	public void setOutput(byte[] output) {
+		_output = new String(output, StandardCharsets.UTF_8);
+	}
+
+	public void setOutput(String output) {
+		_output = output;
+	}
+
+	private String _error;
+	private String _output;
 
 }

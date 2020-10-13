@@ -910,7 +910,7 @@ jdbc.counter.connectionProperties=oracle.jdbc.ReadTimeout=0;oracle.net.CONNECT_T
 				override="true"
 				property="poshi.java.jdk.opts"
 				regexp="(-Xmx)(\d*\w*)"
-				replace="\12048m"
+				replace="\14096m"
 			/>
 
 			<propertyregex
@@ -10833,16 +10833,44 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 					src="${test.build.portal.tools.zip.url}"
 				/>
 
+				<local name="liferay.portal.tools.temp.dir" />
+
+				<property name="liferay.portal.tools.temp.dir" value="liferay-portal-tools-temp" />
+
 				<unzip
-					dest="${liferay.home}/tools"
+					dest="${liferay.portal.tools.temp.dir}"
 					src="liferay-portal-tools.zip"
 				>
 					<mapper
-						from="[^/]+/(tools/)?(.*)"
-						to="\2"
+						from="[^/]+/(.*)"
+						to="\1"
 						type="regexp"
 					/>
 				</unzip>
+
+				<if>
+					<available file="${liferay.portal.tools.temp.dir}/portal-tools-db-upgrade-client" />
+					<then>
+						<move
+							todir="${liferay.home}/tools"
+						>
+							<fileset
+								dir="${liferay.portal.tools.temp.dir}"
+							/>
+						</move>
+					</then>
+					<else>
+						<move
+							todir="${liferay.home}/tools/portal-tools-db-upgrade-client"
+						>
+							<fileset
+								dir="${liferay.portal.tools.temp.dir}"
+							/>
+						</move>
+					</else>
+				</if>
+
+				<delete dir="${liferay.portal.tools.temp.dir}" failonerror="false" />
 
 				<move
 					todir="${liferay.home}/tools"
