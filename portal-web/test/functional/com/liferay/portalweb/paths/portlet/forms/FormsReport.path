@@ -20,7 +20,7 @@
             </tr>
             <tr>
                 <td>IMAGE_CHART_ENTRY</td>
-                <td>//*[name()='svg']//*[name()='rect']</td>
+                <td>//*[@class='recharts-surface']</td>
                 <td></td>
             </tr>
         </tbody>
