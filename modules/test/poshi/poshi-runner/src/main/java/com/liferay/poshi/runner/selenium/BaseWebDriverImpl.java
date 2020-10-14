@@ -2213,17 +2213,11 @@ public abstract class BaseWebDriverImpl implements LiferaySelenium, WebDriver {
 			.saveSnapshot(true);
 	}
 
-	public boolean ocularImageValidation(String locator, String image) {
-		String filePath =
-			FileUtil.getSeparator() + getOcularSnapImageDirName() + image;
-
-		File file = new File(
-			LiferaySeleniumUtil.getSourceDirFilePath(filePath));
-
+	public boolean ocularImageValidation(String locator) {
 		WebElement webElement = getWebElement(locator);
 
 		OcularResult result = Ocular.snapshot()
-			.from(filePath)
+			.from(this._webDriver)
 			.sample()
 			.using(this._webDriver)
 			.element(webElement)

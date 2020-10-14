@@ -1,14 +1,9 @@
 definition {
 
-	var formDescription = "Created Form Description";
-	var formName = "Created Form Name";
-
 	macro assertImageValidation {
 
         	AssertElementPresent(locator1 = "FormsReport#IMAGE_CHART_ENTRY");
 
-            OcularImageValidation(
-                locator1 = "FormsReport#IMAGE_CHART_ENTRY",
-			    value1 = "");
+            OcularImageValidation(locator1 = "FormsReport#IMAGE_CHART_ENTRY");
 	}
 }
