@@ -589,7 +589,7 @@ definition {
 
 		Click(locator1 = "Gmail#EMAIL_ADDRESS_VERIFICATION_URL");
 
-		SelectWindow(locator1 = "title=Verify Email Address - ${siteName}");
+		SelectWindow(locator1 = "title=Verify Email Address - Site Name - ${siteName}");
 
 		AssertLocation(value1 = "${emailAddressVerificationURL}");
 

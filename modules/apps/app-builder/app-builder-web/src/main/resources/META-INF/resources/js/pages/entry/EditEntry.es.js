@@ -13,6 +13,7 @@
  */
 
 import ClayButton from '@clayui/button';
+import {createResourceURL, fetch} from 'frontend-js-web';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 
 import {AppContext} from '../../AppContext.es';
@@ -23,7 +24,7 @@ import withDDMForm, {
 	useDDMFormSubmit,
 	useDDMFormValidation,
 } from '../../hooks/withDDMForm.es';
-import {addItem, updateItem} from '../../utils/client.es';
+import {updateItem} from '../../utils/client.es';
 import {errorToast, successToast} from '../../utils/toast.es';
 
 export const EditEntry = ({
@@ -33,15 +34,23 @@ export const EditEntry = ({
 	redirect,
 	userLanguageId,
 }) => {
-	const {basePortletURL, portletId} = useContext(AppContext);
+	const {
+		appId,
+		basePortletURL,
+		baseResourceURL,
+		namespace,
+		portletId,
+		showFormView,
+		showTableView,
+	} = useContext(AppContext);
 	const {availableLanguageIds, defaultLanguageId} = useDataDefinition(
 		dataDefinitionId
 	);
 	const [submitting, setSubmitting] = useState(false);
 
+	const isFormViewOnly = showFormView && !showTableView;
 	const urlParams = new URLSearchParams(window.location.href);
-	const backURL =
-		urlParams.get(`_${portletId}_backURL`) || `${basePortletURL}/#/`;
+	const backURL = urlParams.get(`_${portletId}_backURL`) || basePortletURL;
 
 	const onCancel = useCallback(() => {
 		if (redirect) {
@@ -65,6 +74,7 @@ export const EditEntry = ({
 
 	const onSubmit = useCallback(
 		(event) => {
+			event.preventDefault();
 			setSubmitting(true);
 
 			validateForm(event)
@@ -84,9 +94,19 @@ export const EditEntry = ({
 							.catch(onError);
 					}
 					else {
-						addItem(
-							`/o/data-engine/v2.0/data-definitions/${dataDefinitionId}/data-records`,
-							dataRecord
+						fetch(
+							createResourceURL(baseResourceURL, {
+								p_p_resource_id: '/app_builder/add_data_record',
+							}),
+							{
+								body: new URLSearchParams(
+									Liferay.Util.ns(namespace, {
+										appBuilderAppId: appId,
+										dataRecord: JSON.stringify(dataRecord),
+									})
+								),
+								method: 'POST',
+							}
 						)
 							.then(() => {
 								successToast(
@@ -101,7 +121,14 @@ export const EditEntry = ({
 					setSubmitting(false);
 				});
 		},
-		[dataDefinitionId, dataRecordId, onCancel, validateForm]
+		[
+			appId,
+			baseResourceURL,
+			dataRecordId,
+			namespace,
+			onCancel,
+			validateForm,
+		]
 	);
 
 	useDDMFormSubmit(ddmForm, onSubmit);
@@ -118,7 +145,7 @@ export const EditEntry = ({
 	return (
 		<>
 			<ControlMenuBase
-				backURL={redirect || backURL}
+				backURL={isFormViewOnly ? null : redirect || backURL}
 				title={
 					dataRecordId !== '0'
 						? Liferay.Language.get('edit-entry')
@@ -132,9 +159,11 @@ export const EditEntry = ({
 					{Liferay.Language.get('save')}
 				</Button>
 
-				<Button displayType="secondary" onClick={onCancel}>
-					{Liferay.Language.get('cancel')}
-				</Button>
+				{!isFormViewOnly && (
+					<Button displayType="secondary" onClick={onCancel}>
+						{Liferay.Language.get('cancel')}
+					</Button>
+				)}
 			</ClayButton.Group>
 		</>
 	);

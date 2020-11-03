@@ -170,7 +170,16 @@ export default ({
 								{currentStep == 2 && (
 									<EditAppBody
 										defaultLanguageId={defaultLanguageId}
-										endpoint={`/o/headless-admin-workflow/v1.0/workflow-definitions?page=-1&pageSize=-1`}
+										emptyState={{
+											search: {
+												className:
+													'taglib-search-state',
+												title: Liferay.Language.get(
+													'no-results-were-found'
+												),
+											},
+										}}
+										endpoint={`/o/headless-admin-workflow/v1.0/workflow-definitions?active=true&page=-1&pageSize=-1`}
 										itemType="WORKFLOW_PROCESS"
 										title={
 											<>

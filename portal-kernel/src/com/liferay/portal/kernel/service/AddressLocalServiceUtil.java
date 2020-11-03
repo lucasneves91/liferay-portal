@@ -52,6 +52,10 @@ public class AddressLocalServiceUtil {
 		return getService().addAddress(address);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	public static com.liferay.portal.kernel.model.Address addAddress(
 			long userId, String className, long classPK, String street1,
 			String street2, String street3, String city, String zip,
@@ -62,6 +66,29 @@ public class AddressLocalServiceUtil {
 		return getService().addAddress(
 			userId, className, classPK, street1, street2, street3, city, zip,
 			regionId, countryId, typeId, mailing, primary, serviceContext);
+	}
+
+	public static com.liferay.portal.kernel.model.Address addAddress(
+			String externalReferenceCode, long userId, String className,
+			long classPK, String name, String description, String street1,
+			String street2, String street3, String city, String zip,
+			long regionId, long countryId, long typeId, boolean mailing,
+			boolean primary, String phoneNumber, ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().addAddress(
+			externalReferenceCode, userId, className, classPK, name,
+			description, street1, street2, street3, city, zip, regionId,
+			countryId, typeId, mailing, primary, phoneNumber, serviceContext);
+	}
+
+	public static com.liferay.portal.kernel.model.Address copyAddress(
+			long addressId, String className, long classPK,
+			ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().copyAddress(
+			addressId, className, classPK, serviceContext);
 	}
 
 	/**
@@ -126,6 +153,10 @@ public class AddressLocalServiceUtil {
 		getService().deleteAddresses(companyId, className, classPK);
 	}
 
+	public static void deleteCountryAddresses(long countryId) {
+		getService().deleteCountryAddresses(countryId);
+	}
+
 	/**
 	 * @throws PortalException
 	 */
@@ -135,6 +166,10 @@ public class AddressLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return getService().deletePersistedModel(persistedModel);
+	}
+
+	public static void deleteRegionAddresses(long regionId) {
+		getService().deleteRegionAddresses(regionId);
 	}
 
 	public static <T> T dslQuery(
@@ -326,6 +361,16 @@ public class AddressLocalServiceUtil {
 		return getService().getAddresses(companyId, className, classPK);
 	}
 
+	public static java.util.List<com.liferay.portal.kernel.model.Address>
+		getAddresses(
+			long companyId, String className, long classPK, int start, int end,
+			com.liferay.portal.kernel.util.OrderByComparator
+				<com.liferay.portal.kernel.model.Address> orderByComparator) {
+
+		return getService().getAddresses(
+			companyId, className, classPK, start, end, orderByComparator);
+	}
+
 	/**
 	 * Returns the number of addresses.
 	 *
@@ -333,6 +378,12 @@ public class AddressLocalServiceUtil {
 	 */
 	public static int getAddressesCount() {
 		return getService().getAddressesCount();
+	}
+
+	public static int getAddressesCount(
+		long companyId, String className, long classPK) {
+
+		return getService().getAddressesCount(companyId, className, classPK);
 	}
 
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
@@ -394,6 +445,18 @@ public class AddressLocalServiceUtil {
 		return getService().updateAddress(
 			addressId, street1, street2, street3, city, zip, regionId,
 			countryId, typeId, mailing, primary);
+	}
+
+	public static com.liferay.portal.kernel.model.Address updateAddress(
+			long addressId, String name, String description, String street1,
+			String street2, String street3, String city, String zip,
+			long regionId, long countryId, long typeId, boolean mailing,
+			boolean primary, String phoneNumber)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().updateAddress(
+			addressId, name, description, street1, street2, street3, city, zip,
+			regionId, countryId, typeId, mailing, primary, phoneNumber);
 	}
 
 	public static AddressLocalService getService() {

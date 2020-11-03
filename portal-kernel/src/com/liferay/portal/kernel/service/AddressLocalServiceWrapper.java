@@ -45,6 +45,10 @@ public class AddressLocalServiceWrapper
 		return _addressLocalService.addAddress(address);
 	}
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	@Override
 	public com.liferay.portal.kernel.model.Address addAddress(
 			long userId, java.lang.String className, long classPK,
@@ -57,6 +61,33 @@ public class AddressLocalServiceWrapper
 		return _addressLocalService.addAddress(
 			userId, className, classPK, street1, street2, street3, city, zip,
 			regionId, countryId, typeId, mailing, primary, serviceContext);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.Address addAddress(
+			java.lang.String externalReferenceCode, long userId,
+			java.lang.String className, long classPK, java.lang.String name,
+			java.lang.String description, java.lang.String street1,
+			java.lang.String street2, java.lang.String street3,
+			java.lang.String city, java.lang.String zip, long regionId,
+			long countryId, long typeId, boolean mailing, boolean primary,
+			java.lang.String phoneNumber, ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _addressLocalService.addAddress(
+			externalReferenceCode, userId, className, classPK, name,
+			description, street1, street2, street3, city, zip, regionId,
+			countryId, typeId, mailing, primary, phoneNumber, serviceContext);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.Address copyAddress(
+			long addressId, java.lang.String className, long classPK,
+			ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _addressLocalService.copyAddress(
+			addressId, className, classPK, serviceContext);
 	}
 
 	/**
@@ -125,6 +156,11 @@ public class AddressLocalServiceWrapper
 		_addressLocalService.deleteAddresses(companyId, className, classPK);
 	}
 
+	@Override
+	public void deleteCountryAddresses(long countryId) {
+		_addressLocalService.deleteCountryAddresses(countryId);
+	}
+
 	/**
 	 * @throws PortalException
 	 */
@@ -134,6 +170,11 @@ public class AddressLocalServiceWrapper
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _addressLocalService.deletePersistedModel(persistedModel);
+	}
+
+	@Override
+	public void deleteRegionAddresses(long regionId) {
+		_addressLocalService.deleteRegionAddresses(regionId);
 	}
 
 	@Override
@@ -337,6 +378,17 @@ public class AddressLocalServiceWrapper
 		return _addressLocalService.getAddresses(companyId, className, classPK);
 	}
 
+	@Override
+	public java.util.List<com.liferay.portal.kernel.model.Address> getAddresses(
+		long companyId, java.lang.String className, long classPK, int start,
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator
+			<com.liferay.portal.kernel.model.Address> orderByComparator) {
+
+		return _addressLocalService.getAddresses(
+			companyId, className, classPK, start, end, orderByComparator);
+	}
+
 	/**
 	 * Returns the number of addresses.
 	 *
@@ -345,6 +397,14 @@ public class AddressLocalServiceWrapper
 	@Override
 	public int getAddressesCount() {
 		return _addressLocalService.getAddressesCount();
+	}
+
+	@Override
+	public int getAddressesCount(
+		long companyId, java.lang.String className, long classPK) {
+
+		return _addressLocalService.getAddressesCount(
+			companyId, className, classPK);
 	}
 
 	@Override
@@ -413,6 +473,20 @@ public class AddressLocalServiceWrapper
 		return _addressLocalService.updateAddress(
 			addressId, street1, street2, street3, city, zip, regionId,
 			countryId, typeId, mailing, primary);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.Address updateAddress(
+			long addressId, java.lang.String name, java.lang.String description,
+			java.lang.String street1, java.lang.String street2,
+			java.lang.String street3, java.lang.String city,
+			java.lang.String zip, long regionId, long countryId, long typeId,
+			boolean mailing, boolean primary, java.lang.String phoneNumber)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _addressLocalService.updateAddress(
+			addressId, name, description, street1, street2, street3, city, zip,
+			regionId, countryId, typeId, mailing, primary, phoneNumber);
 	}
 
 	@Override

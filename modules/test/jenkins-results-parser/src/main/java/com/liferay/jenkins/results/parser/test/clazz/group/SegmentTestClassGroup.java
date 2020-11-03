@@ -14,6 +14,8 @@
 
 package com.liferay.jenkins.results.parser.test.clazz.group;
 
+import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,23 @@ public class SegmentTestClassGroup extends BaseTestClassGroup {
 		return _axisTestClassGroups.get(segmentIndex);
 	}
 
+	public int getBatchIndex() {
+		List<SegmentTestClassGroup> segmentTestClassGroups =
+			_parentBatchTestClassGroup.getSegmentTestClassGroups();
+
+		return segmentTestClassGroups.indexOf(this);
+	}
+
+	public String getBatchName() {
+		return _parentBatchTestClassGroup.getBatchName();
+	}
+
 	public List<AxisTestClassGroup> getChildAxisTestClassGroups() {
 		return new ArrayList<>(_axisTestClassGroups);
+	}
+
+	public Integer getMaximumSlavesPerHost() {
+		return _parentBatchTestClassGroup.getMaximumSlavesPerHost();
 	}
 
 	public Integer getMinimumSlaveRAM() {
@@ -46,6 +63,15 @@ public class SegmentTestClassGroup extends BaseTestClassGroup {
 
 	public BatchTestClassGroup getParentBatchTestClassGroup() {
 		return _parentBatchTestClassGroup;
+	}
+
+	public String getSegmentName() {
+		return JenkinsResultsParserUtil.combine(
+			getBatchName(), "/", String.valueOf(getBatchIndex()));
+	}
+
+	public String getTestCasePropertiesContent() {
+		return null;
 	}
 
 	protected SegmentTestClassGroup(

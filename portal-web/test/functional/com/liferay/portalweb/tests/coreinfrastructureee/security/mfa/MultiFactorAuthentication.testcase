@@ -970,6 +970,8 @@ definition {
 	@description = "This is a use case for LPS-115566"
 	@priority = "4"
 	test RemoveCurrentTOTPWontAffectOthers {
+		property test.name.skip.portal.instance = "MultiFactorAuthentication#RemoveCurrentTOTPWontAffectOthers";
+
 		var portalURL = PropsUtil.get("portal.url");
 
 		JSONUser.addUser(

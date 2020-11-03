@@ -236,6 +236,12 @@ components:
                     description:
                         The object/asset that the instance's workflow is managing.
                     readOnly: true
+                state:
+                    # @review
+                    description:
+                        The instance's current state.
+                    readOnly: true
+                    type: string
                 workflowDefinitionName:
                     description:
                         The name of the instance's workflow definition.
@@ -732,18 +738,14 @@ paths:
             operationId: getWorkflowInstancesPage
             parameters:
                 - in: query
-                  name: assetClassNames
+                  name: assetClassName
                   schema:
-                      items:
-                          type: string
-                      type: array
+                      type: string
                 - in: query
-                  name: assetPrimaryKeys
+                  name: assetPrimaryKey
                   schema:
-                      items:
-                          format: int64
-                          type: integer
-                      type: array
+                      format: int64
+                      type: integer
                 - in: query
                   name: completed
                   schema:

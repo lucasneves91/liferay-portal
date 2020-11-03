@@ -77,11 +77,28 @@ public interface AddressLocalService
 	@Indexable(type = IndexableType.REINDEX)
 	public Address addAddress(Address address);
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x)
+	 */
+	@Deprecated
 	public Address addAddress(
 			long userId, String className, long classPK, String street1,
 			String street2, String street3, String city, String zip,
 			long regionId, long countryId, long typeId, boolean mailing,
 			boolean primary, ServiceContext serviceContext)
+		throws PortalException;
+
+	public Address addAddress(
+			String externalReferenceCode, long userId, String className,
+			long classPK, String name, String description, String street1,
+			String street2, String street3, String city, String zip,
+			long regionId, long countryId, long typeId, boolean mailing,
+			boolean primary, String phoneNumber, ServiceContext serviceContext)
+		throws PortalException;
+
+	public Address copyAddress(
+			long addressId, String className, long classPK,
+			ServiceContext serviceContext)
 		throws PortalException;
 
 	/**
@@ -132,12 +149,16 @@ public interface AddressLocalService
 
 	public void deleteAddresses(long companyId, String className, long classPK);
 
+	public void deleteCountryAddresses(long countryId);
+
 	/**
 	 * @throws PortalException
 	 */
 	@Override
 	public PersistedModel deletePersistedModel(PersistedModel persistedModel)
 		throws PortalException;
+
+	public void deleteRegionAddresses(long regionId);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public <T> T dslQuery(DSLQuery dslQuery);
@@ -278,6 +299,11 @@ public interface AddressLocalService
 	public List<Address> getAddresses(
 		long companyId, String className, long classPK);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<Address> getAddresses(
+		long companyId, String className, long classPK, int start, int end,
+		OrderByComparator<Address> orderByComparator);
+
 	/**
 	 * Returns the number of addresses.
 	 *
@@ -285,6 +311,10 @@ public interface AddressLocalService
 	 */
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public int getAddressesCount();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getAddressesCount(
+		long companyId, String className, long classPK);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ExportActionableDynamicQuery getExportActionableDynamicQuery(
@@ -325,6 +355,13 @@ public interface AddressLocalService
 			long addressId, String street1, String street2, String street3,
 			String city, String zip, long regionId, long countryId, long typeId,
 			boolean mailing, boolean primary)
+		throws PortalException;
+
+	public Address updateAddress(
+			long addressId, String name, String description, String street1,
+			String street2, String street3, String city, String zip,
+			long regionId, long countryId, long typeId, boolean mailing,
+			boolean primary, String phoneNumber)
 		throws PortalException;
 
 }

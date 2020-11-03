@@ -941,7 +941,7 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 									}
 								}
 								catch (Exception exception) {
-									new GradleException(
+									throw new GradleException(
 										buildWSDDTask + " failed", exception);
 								}
 							}
@@ -1555,9 +1555,10 @@ public class LiferayOSGiPlugin implements Plugin<Project> {
 
 		for (Map.Entry<String, ?> entry : projectProperties.entrySet()) {
 			String key = entry.getKey();
+			Object value = entry.getValue();
 
-			if (Character.isLowerCase(key.charAt(0))) {
-				properties.put(key, GradleUtil.toString(entry.getValue()));
+			if (Character.isLowerCase(key.charAt(0)) && (value != null)) {
+				properties.put(key, GradleUtil.toString(value));
 			}
 		}
 

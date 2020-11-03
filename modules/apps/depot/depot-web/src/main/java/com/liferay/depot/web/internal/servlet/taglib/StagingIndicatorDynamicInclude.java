@@ -24,12 +24,14 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.permission.PortletPermission;
@@ -40,6 +42,7 @@ import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -54,6 +57,7 @@ import java.io.Writer;
 
 import java.util.Map;
 
+import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 
@@ -97,9 +101,9 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 		catch (JspException jspException) {
 			ReflectionUtil.throwException(jspException);
 		}
-		catch (PortalException portalException) {
+		catch (PortalException | PortletException exception) {
 			if (_log.isWarnEnabled()) {
-				_log.warn(portalException, portalException);
+				_log.warn(exception, exception);
 			}
 		}
 	}
@@ -144,6 +148,37 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 		return portletURL.toString();
 	}
 
+	private JSONObject _getLiveGroupItemJSONObject(
+		HttpServletRequest httpServletRequest, Group scopeGroup,
+		String liveGroupURL) {
+
+		JSONObject publishToLiveItemJSONObject = JSONUtil.put(
+			"href", liveGroupURL
+		).put(
+			"label", _language.get(httpServletRequest, _getLiveKey(scopeGroup))
+		).put(
+			"symbolLeft", "radio-button"
+		).put(
+			"symbolRight", _getSymbolRight(liveGroupURL)
+		);
+
+		if (Validator.isNull(liveGroupURL)) {
+			publishToLiveItemJSONObject.put(
+				"className", "lfr-portal-tooltip"
+			).put(
+				"title",
+				_language.get(
+					ResourceBundleUtil.getBundle(
+						"content.Language",
+						_portal.getLocale(httpServletRequest), getClass()),
+					"the-connection-to-the-remote-live-asset-library-cannot-" +
+						"be-established-due-to-a-network-problem")
+			);
+		}
+
+		return publishToLiveItemJSONObject;
+	}
+
 	private String _getLiveGroupURL(
 			Group group, HttpServletRequest httpServletRequest)
 		throws PortalException {
@@ -174,14 +209,15 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 	}
 
 	private String _getPublishToLiveURL(
-		Group group, HttpServletRequest httpServletRequest) {
+			Group group, HttpServletRequest httpServletRequest)
+		throws PortletException {
 
 		LiferayPortletURL liferayPortletURL = PortletURLFactoryUtil.create(
-			httpServletRequest, StagingProcessesPortletKeys.STAGING_PROCESSES,
+			httpServletRequest, PortletKeys.EXPORT_IMPORT,
 			PortletRequest.RENDER_PHASE);
 
 		liferayPortletURL.setParameter(
-			"mvcRenderCommandName", "publishLayouts");
+			"mvcRenderCommandName", "publishLayoutsSimple");
 
 		String cmd = Constants.PUBLISH_TO_LIVE;
 
@@ -190,16 +226,42 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 		}
 
 		liferayPortletURL.setParameter(Constants.CMD, cmd);
-
 		liferayPortletURL.setParameter(
 			"groupId", String.valueOf(group.getGroupId()));
+		liferayPortletURL.setParameter(
+			"localPublishing", String.valueOf(!group.isStagedRemotely()));
+		liferayPortletURL.setParameter("quickPublish", Boolean.TRUE.toString());
+		liferayPortletURL.setParameter(
+			"remoteAddress", group.getTypeSettingsProperty("remoteAddress"));
+		liferayPortletURL.setParameter(
+			"remotePort", group.getTypeSettingsProperty("remotePort"));
+		liferayPortletURL.setParameter(
+			"remotePathContext",
+			group.getTypeSettingsProperty("remotePathContext"));
+		liferayPortletURL.setParameter(
+			"remoteGroupId", group.getTypeSettingsProperty("remoteGroupId"));
+		liferayPortletURL.setParameter(
+			"secureConnection",
+			group.getTypeSettingsProperty("secureConnection"));
+		liferayPortletURL.setParameter(
+			"secureConnection",
+			group.getTypeSettingsProperty("secureConnection"));
+		liferayPortletURL.setParameter(
+			"sourceGroupId", String.valueOf(group.getGroupId()));
+
+		Group liveGroup = _staging.getLiveGroup(group.getGroupId());
+
+		liferayPortletURL.setParameter(
+			"targetGroupId", String.valueOf(liveGroup.getGroupId()));
+
+		liferayPortletURL.setWindowState(LiferayWindowState.POP_UP);
 
 		return liferayPortletURL.toString();
 	}
 
 	private Map<String, Object> _getReactData(
 			HttpServletRequest httpServletRequest, ThemeDisplay themeDisplay)
-		throws PortalException {
+		throws PortalException, PortletException {
 
 		Group scopeGroup = themeDisplay.getScopeGroup();
 
@@ -222,35 +284,16 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 			).put(
 				"items",
 				_createJSONArray(
+					_getLiveGroupItemJSONObject(
+						httpServletRequest, scopeGroup, liveGroupURL),
 					JSONUtil.put(
-						"className", "lfr-portal-tooltip"
-					).put(
-						"href", liveGroupURL
-					).put(
-						"label",
-						_language.get(
-							httpServletRequest, _getLiveKey(scopeGroup))
-					).put(
-						"symbolLeft", "radio-button"
-					).put(
-						"symbolRight", _getSymbolRight(liveGroupURL)
-					).put(
-						"title",
-						_language.get(
-							ResourceBundleUtil.getBundle(
-								"content.Language",
-								_portal.getLocale(httpServletRequest),
-								getClass()),
-							"the-connection-to-the-remote-live-asset-library-" +
-								"cannot-be-established-due-to-a-network-" +
-									"problem")
-					),
-					JSONUtil.put(
-						"href",
-						_getPublishToLiveURL(scopeGroup, httpServletRequest)
+						"action", "publishToLive"
 					).put(
 						"label",
 						_language.get(httpServletRequest, "publish-to-live")
+					).put(
+						"publishURL",
+						_getPublishToLiveURL(scopeGroup, httpServletRequest)
 					).put(
 						"symbolLeft", "cards2"
 					))
@@ -291,7 +334,7 @@ public class StagingIndicatorDynamicInclude extends BaseDynamicInclude {
 	private void _includeStagingIndicator(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, ThemeDisplay themeDisplay)
-		throws IOException, JspException, PortalException {
+		throws IOException, JspException, PortalException, PortletException {
 
 		Writer writer = httpServletResponse.getWriter();
 

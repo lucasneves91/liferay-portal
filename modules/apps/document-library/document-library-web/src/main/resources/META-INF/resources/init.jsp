@@ -118,6 +118,7 @@ page import="com.liferay.document.library.web.internal.display.context.logic.DLP
 page import="com.liferay.document.library.web.internal.display.context.logic.DLVisualizationHelper" %><%@
 page import="com.liferay.document.library.web.internal.display.context.util.DLRequestHelper" %><%@
 page import="com.liferay.document.library.web.internal.display.context.util.IGRequestHelper" %><%@
+page import="com.liferay.document.library.web.internal.exception.FileNameExtensionException" %><%@
 page import="com.liferay.document.library.web.internal.helper.DLTrashHelper" %><%@
 page import="com.liferay.document.library.web.internal.portlet.action.EditFileEntryMVCActionCommand" %><%@
 page import="com.liferay.document.library.web.internal.search.EntriesChecker" %><%@
@@ -170,7 +171,6 @@ page import="com.liferay.portal.kernel.portlet.PortletURLUtil" %><%@
 page import="com.liferay.portal.kernel.repository.AuthenticationRepositoryException" %><%@
 page import="com.liferay.portal.kernel.repository.RepositoryConfiguration" %><%@
 page import="com.liferay.portal.kernel.repository.RepositoryException" %><%@
-page import="com.liferay.portal.kernel.repository.capabilities.CommentCapability" %><%@
 page import="com.liferay.portal.kernel.repository.model.FileEntry" %><%@
 page import="com.liferay.portal.kernel.repository.model.FileShortcut" %><%@
 page import="com.liferay.portal.kernel.repository.model.FileVersion" %><%@
@@ -221,10 +221,7 @@ page import="com.liferay.portlet.documentlibrary.DLGroupServiceSettings" %><%@
 page import="com.liferay.portlet.documentlibrary.constants.DLConstants" %><%@
 page import="com.liferay.taglib.search.ResultRow" %><%@
 page import="com.liferay.taglib.servlet.PipingServletResponse" %><%@
-page import="com.liferay.taglib.util.PortalIncludeUtil" %><%@
 page import="com.liferay.trash.model.TrashEntry" %>
-
-<%@ page import="java.io.IOException" %>
 
 <%@ page import="java.text.DecimalFormatSymbols" %><%@
 page import="java.text.Format" %>

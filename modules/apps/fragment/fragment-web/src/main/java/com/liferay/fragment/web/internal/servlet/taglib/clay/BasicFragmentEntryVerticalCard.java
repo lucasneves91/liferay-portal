@@ -86,7 +86,8 @@ public class BasicFragmentEntryVerticalCard extends FragmentEntryVerticalCard {
 		if (!FragmentPermission.contains(
 				themeDisplay.getPermissionChecker(),
 				themeDisplay.getScopeGroupId(),
-				FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES)) {
+				FragmentActionKeys.MANAGE_FRAGMENT_ENTRIES) ||
+			(fragmentEntry.getType() == FragmentConstants.TYPE_REACT)) {
 
 			return null;
 		}

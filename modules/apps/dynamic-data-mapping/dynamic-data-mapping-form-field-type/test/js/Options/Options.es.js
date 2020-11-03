@@ -593,7 +593,7 @@ describe('Options', () => {
 		unmockLiferayLanguage();
 	});
 
-	it('adds the default option value to the reference property when it is empty', () => {
+	it('adds the default option value to the reference property when it is empty and leaves the field', () => {
 		mockLiferayLanguage();
 
 		const {container} = render(
@@ -620,6 +620,8 @@ describe('Options', () => {
 		expect(referenceInput.value).toBe('Bar');
 
 		fireEvent.input(referenceInput, {target: {value: ''}});
+
+		fireEvent.blur(referenceInput);
 
 		act(() => {
 			jest.runAllTimers();

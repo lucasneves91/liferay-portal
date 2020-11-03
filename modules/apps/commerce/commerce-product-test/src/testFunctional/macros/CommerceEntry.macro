@@ -455,7 +455,7 @@ definition {
 			locator1 = "TextInput#GENERIC_TEXT_INPUT",
 			value1 = "${specificationDescription}");
 
-		ClickNoError(locator1 = "CommerceEntry#SAVE_BUTTON");
+		Button.clickSave();
 	}
 
 	macro createNewSpecificationLabels {
@@ -774,6 +774,14 @@ definition {
 			AssertElementPresent(
 				key_rowEntry = "${channelSiteName}",
 				locator1 = "ContentRow#ENTRY_CONTENT_ENTRY_NAME");
+		}
+	}
+
+	macro viewCurrenciesEntry {
+		for (var currencyName : list "${currenciesList}") {
+			AssertElementPresent(
+				key_entryName = "${currencyName}",
+				locator1 = "CommerceNavigation#ENTRY_NAME");
 		}
 	}
 

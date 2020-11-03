@@ -1344,6 +1344,16 @@
 			<property name="allowTrailingEmptyLines" value="true" />
 		</check>
 	</source-processor>
+	<source-processor name="TXTSourceProcessor">
+		<check name="TXTEmptyLinesCheck">
+			<category name="Styling" />
+			<description name="Finds missing and unnecessary empty lines." />
+		</check>
+		<check name="TXTStylingCheck">
+			<category name="Styling" />
+			<description name="Applies rules to enforce consisteny in code style." />
+		</check>
+	</source-processor>
 	<source-processor name="XMLSourceProcessor">
 		<check name="XMLBuildFileCheck">
 			<category name="Bug Prevention" />

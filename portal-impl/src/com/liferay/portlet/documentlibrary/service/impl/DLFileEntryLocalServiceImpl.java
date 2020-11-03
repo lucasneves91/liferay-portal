@@ -187,6 +187,11 @@ public class DLFileEntryLocalServiceImpl
 
 		String fileName = DLUtil.getSanitizedFileName(title, extension);
 
+		if (Validator.isNotNull(sourceFileName)) {
+			fileName = DLUtil.getSanitizedFileName(
+				FileUtil.stripExtension(sourceFileName), extension);
+		}
+
 		if (fileEntryTypeId == -1) {
 			fileEntryTypeId =
 				dlFileEntryTypeLocalService.getDefaultFileEntryTypeId(folderId);
@@ -1486,7 +1491,7 @@ public class DLFileEntryLocalServiceImpl
 				"Unable to revert from the latest file version");
 		}
 
-		String sourceFileName = dlFileVersion.getTitle();
+		String sourceFileName = dlFileVersion.getFileName();
 		String extension = dlFileVersion.getExtension();
 		String mimeType = dlFileVersion.getMimeType();
 		String title = dlFileVersion.getTitle();
@@ -1642,7 +1647,10 @@ public class DLFileEntryLocalServiceImpl
 		String extension = DLAppUtil.getExtension(title, sourceFileName);
 
 		if ((file == null) && (inputStream == null)) {
-			extension = dlFileEntry.getExtension();
+			if (Validator.isNull(extension)) {
+				extension = dlFileEntry.getExtension();
+			}
+
 			mimeType = dlFileEntry.getMimeType();
 		}
 
@@ -1911,7 +1919,7 @@ public class DLFileEntryLocalServiceImpl
 			(dlFileEntry.getFileEntryId() != fileEntryId)) {
 
 			throw new DuplicateFileEntryException(
-				"A file entry already exists with file name " + title);
+				"A file entry already exists with file name " + fileName);
 		}
 	}
 
@@ -2401,6 +2409,11 @@ public class DLFileEntryLocalServiceImpl
 			}
 
 			String fileName = DLUtil.getSanitizedFileName(title, extension);
+
+			if (Validator.isNotNull(sourceFileName)) {
+				fileName = DLUtil.getSanitizedFileName(
+					FileUtil.stripExtension(sourceFileName), extension);
+			}
 
 			Date now = new Date();
 

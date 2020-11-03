@@ -329,6 +329,10 @@ public class EditCommerceOrderMVCActionCommand extends BaseMVCActionCommand {
 			actionRequest, CommercePortletKeys.COMMERCE_SHIPMENT,
 			PortletRequest.RENDER_PHASE);
 
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
+
+		shipmentPortletURL.setParameter("redirect", redirect);
+
 		shipmentPortletURL.setParameter(
 			"mvcRenderCommandName", "editCommerceShipment");
 		shipmentPortletURL.setParameter(

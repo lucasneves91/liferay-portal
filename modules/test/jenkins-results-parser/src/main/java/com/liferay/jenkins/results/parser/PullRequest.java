@@ -288,7 +288,7 @@ public class PullRequest {
 		return headJSONObject.getString("sha");
 	}
 
-	public JSONArray getSenderSHAStatuses() {
+	public JSONArray getSenderSHAStatusesJSONArray() {
 		JSONArray statusesJSONArray = null;
 
 		try {
@@ -300,6 +300,23 @@ public class PullRequest {
 		}
 
 		return statusesJSONArray;
+	}
+
+	public JSONObject getSenderSHAStatusJSONObject() {
+		JSONObject statusJSONObject = null;
+
+		try {
+			String statusURL = _jsonObject.getString("statuses_url");
+
+			statusURL = statusURL.replace("statuses", "status");
+
+			statusJSONObject = JenkinsResultsParserUtil.toJSONObject(statusURL);
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+
+		return statusJSONObject;
 	}
 
 	public String getSenderUsername() {

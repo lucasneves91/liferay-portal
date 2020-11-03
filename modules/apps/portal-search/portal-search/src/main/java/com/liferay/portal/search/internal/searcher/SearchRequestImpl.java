@@ -73,8 +73,11 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 		_pipelineAggregationsMap.putAll(
 			searchRequestImpl._pipelineAggregationsMap);
 		_postFilterQuery = searchRequestImpl._postFilterQuery;
+		_postFilterComplexQueryParts.addAll(
+			searchRequestImpl._postFilterComplexQueryParts);
 		_query = searchRequestImpl._query;
 		_rescoreQuery = searchRequestImpl._rescoreQuery;
+		_rescores.addAll(searchRequestImpl._rescores);
 		_searchContext = searchRequestImpl._searchContext;
 		_size = searchRequestImpl._size;
 		_sorts.addAll(searchRequestImpl._sorts);
@@ -120,10 +123,22 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 			pipelineAggregation.getName(), pipelineAggregation);
 	}
 
+	public void addPostFilterQueryPart(ComplexQueryPart complexQueryPart) {
+		_postFilterComplexQueryParts.add(complexQueryPart);
+	}
+
+	public void addRescore(Rescore rescore) {
+		_rescores.add(rescore);
+	}
+
 	public void addSelectedFieldNames(String... selectedFieldNames) {
 		QueryConfig queryConfig = _searchContext.getQueryConfig();
 
 		queryConfig.addSelectedFieldNames(selectedFieldNames);
+	}
+
+	public void addSort(Sort sort) {
+		_sorts.add(sort);
 	}
 
 	@Override
@@ -213,6 +228,11 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	@Override
 	public Map<String, PipelineAggregation> getPipelineAggregationsMap() {
 		return Collections.unmodifiableMap(_pipelineAggregationsMap);
+	}
+
+	@Override
+	public List<ComplexQueryPart> getPostFilterComplexQueryParts() {
+		return Collections.unmodifiableList(_postFilterComplexQueryParts);
 	}
 
 	@Override
@@ -443,10 +463,12 @@ public class SearchRequestImpl implements SearchRequest, Serializable {
 	private String _paginationStartParameterName;
 	private final Map<String, PipelineAggregation> _pipelineAggregationsMap =
 		new LinkedHashMap<>();
+	private List<ComplexQueryPart> _postFilterComplexQueryParts =
+		new ArrayList<>();
 	private Query _postFilterQuery;
 	private Query _query;
 	private Query _rescoreQuery;
-	private List<Rescore> _rescores;
+	private List<Rescore> _rescores = new ArrayList<>();
 	private final SearchContext _searchContext;
 	private Integer _size;
 	private final List<Sort> _sorts = new ArrayList<>();

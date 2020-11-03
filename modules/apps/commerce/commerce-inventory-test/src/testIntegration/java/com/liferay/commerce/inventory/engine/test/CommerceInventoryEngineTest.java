@@ -441,6 +441,7 @@ public class CommerceInventoryEngineTest {
 			ServiceContextTestUtil.getServiceContext(_user.getGroupId());
 
 		_commerceInventoryWarehouseLocalService.addCommerceInventoryWarehouse(
+			commerceInventoryWarehouse.getExternalReferenceCode(),
 			commerceInventoryWarehouse.getName(),
 			commerceInventoryWarehouse.getDescription(),
 			commerceInventoryWarehouse.isActive(),
@@ -452,9 +453,7 @@ public class CommerceInventoryEngineTest {
 			commerceInventoryWarehouse.getCommerceRegionCode(),
 			commerceInventoryWarehouse.getCountryTwoLettersISOCode(),
 			commerceInventoryWarehouse.getLatitude(),
-			commerceInventoryWarehouse.getLongitude(),
-			commerceInventoryWarehouse.getExternalReferenceCode(),
-			serviceContext);
+			commerceInventoryWarehouse.getLongitude(), serviceContext);
 	}
 
 	@Test

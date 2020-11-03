@@ -72,7 +72,7 @@ describe('EditApp', () => {
 			.mockResponseOnce(JSON.stringify(items))
 			.mockResponseOnce(JSON.stringify(items))
 			.mockResponseOnce(JSON.stringify(items))
-			.mockResponseOnce(JSON.stringify());
+			.mockResponse(JSON.stringify());
 
 		const {
 			container,
@@ -146,6 +146,13 @@ describe('EditApp', () => {
 			container.querySelector('.multi-step-item.active').textContent
 		).toBe('3');
 
+		const workflowProcessesTable = queryByRole('table');
+		const workflowProcessesRows = workflowProcessesTable.querySelectorAll(
+			'tbody tr'
+		);
+
+		fireEvent.click(workflowProcessesRows[1]);
+
 		next = queryByText('next');
 
 		await act(async () => {
@@ -160,13 +167,22 @@ describe('EditApp', () => {
 
 		expect(deploy.disabled).toBe(true);
 
-		const [, standalone] = queryAllByRole('checkbox');
+		const [, standalone, productMenu] = queryAllByRole('checkbox');
 
-		expect(standalone.checked).toBe(false);
+		expect(productMenu.checked).toBe(false);
+
+		fireEvent.click(productMenu);
+
+		expect(productMenu.checked).toBe(true);
+
+		fireEvent.click(productMenu);
+
+		expect(productMenu.checked).toBe(false);
 
 		fireEvent.click(standalone);
 
 		expect(standalone.checked).toBe(true);
+
 		expect(deploy.disabled).toBe(false);
 
 		await act(async () => {
@@ -174,12 +190,12 @@ describe('EditApp', () => {
 		});
 
 		const {appDeployments, dataLayoutId, dataListViewId} = JSON.parse(
-			fetch.mock.calls[3][1].body
+			fetch.mock.calls[4][1].body
 		);
 		const itemsId = items.items[0].id;
 
 		expect(spySuccessToast.mock.calls.length).toBe(1);
-		expect(fetch.mock.calls.length).toBe(4);
+		expect(fetch.mock.calls.length).toBe(5);
 
 		expect(appDeployments[0]).toStrictEqual({
 			settings: {},
@@ -221,19 +237,20 @@ describe('EditApp', () => {
 
 		const formViewRows = queryByRole('table').querySelectorAll('tbody tr');
 		const title = queryByPlaceholderText('untitled-app');
-		const search = queryByPlaceholderText('search...');
 		let next = queryByText('next');
+		let search = queryByPlaceholderText('search...');
 
 		expect(fetch.mock.calls.length).toBe(1);
 		expect(next.disabled).toBe(true);
 
 		fireEvent.click(formViewRows[1]);
+
 		fireEvent.change(title, {target: {value: titleValue}});
 
-		fireEvent.change(search, {target: {value: 'no-items'}});
-		expect(queryByText('no-results-were-found')).toBeTruthy();
-
 		expect(title.value).toBe(titleValue);
+		fireEvent.change(search, {target: {value: 'no-items'}});
+
+		expect(queryByText('no-results-were-found')).toBeTruthy();
 
 		await act(async () => {
 			await fireEvent.click(next);
@@ -242,15 +259,15 @@ describe('EditApp', () => {
 		expect(fetch.mock.calls.length).toBe(2);
 
 		const tableViewTable = queryByRole('table');
+
 		const tableViewRows = tableViewTable.querySelectorAll('tbody tr');
 
-		next = queryByText('next');
-
 		fireEvent.click(tableViewRows[1]);
+		search = queryByPlaceholderText('search...');
 
-		await act(async () => {
-			await fireEvent.click(next);
-		});
+		fireEvent.change(search, {target: {value: 'no-items'}});
+
+		expect(queryByText('no-results-were-found')).toBeTruthy();
 
 		next = queryByText('next');
 
@@ -258,11 +275,23 @@ describe('EditApp', () => {
 			await fireEvent.click(next);
 		});
 
-		const deploy = queryByText('deploy');
+		search = queryByPlaceholderText('search...');
+
+		fireEvent.change(search, {target: {value: 'no-items'}});
+
+		expect(queryByText('no-results-were-found')).toBeTruthy();
+
+		next = queryByText('next');
+
+		await act(async () => {
+			await fireEvent.click(next);
+		});
 
 		const [, standalone] = queryAllByRole('checkbox');
 
 		fireEvent.click(standalone);
+
+		const deploy = queryByText('deploy');
 
 		await act(async () => {
 			await fireEvent.click(deploy);

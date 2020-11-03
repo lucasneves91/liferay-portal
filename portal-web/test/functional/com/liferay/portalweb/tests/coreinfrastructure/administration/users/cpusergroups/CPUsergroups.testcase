@@ -58,7 +58,7 @@ definition {
 			userScreenName = "usersn");
 	}
 
-	@priority = "4"
+	@priority = "5"
 	test AddUserGroup {
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
@@ -137,8 +137,10 @@ definition {
 		UserGroup.viewDefault();
 	}
 
-	@priority = "4"
+	@priority = "5"
 	test AddUserGroups {
+		property portal.acceptance = "true";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
@@ -249,8 +251,10 @@ definition {
 		UserGroup.viewCP(userGroupName = "UG UserGroup Name Edit");
 	}
 
-	@priority = "4"
+	@priority = "5"
 	test RemoveMember {
+		property portal.acceptance = "true";
+
 		JSONUser.addUser(
 			userEmailAddress = "userea@liferay.com",
 			userFirstName = "userfn",
@@ -292,7 +296,7 @@ definition {
 			userGroupName = "UG UserGroup Name");
 	}
 
-	@priority = "3"
+	@priority = "5"
 	test SearchCurrentMembersAssignedToUserGroup {
 		property portal.acceptance = "true";
 		property test.name.skip.portal.instance = "CPUsergroups#SearchCurrentMembersAssignedToUserGroup";
@@ -344,8 +348,10 @@ definition {
 		AssertNotVisible(locator1 = "UsersAndOrganizationsAssignOrganizationalRoles#USER_TABLE_SCREEN_NAME_2");
 	}
 
-	@priority = "3"
+	@priority = "5"
 	test SearchUserGroup {
+		property portal.acceptance = "true";
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",

@@ -265,10 +265,18 @@ definition {
 			userScreenName = "test");
 	}
 
-	@ignore
 	@priority = "4"
 	test UserGroupSiteTemplates {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
 		property test.name.skip.portal.instance = "UsergroupsUsecase#UserGroupSiteTemplates";
+
+		SiteTemplates.addCP(
+			disableChanges = "true",
+			siteTemplateName = "Site Template Name");
+
+		SiteTemplates.addSitePageViaSiteTemplateCP(
+			pageName = "Wiki Page Name",
+			siteTemplateName = "Site Template Name");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Configuration",
@@ -283,21 +291,14 @@ definition {
 			userLastName = "userln",
 			userScreenName = "usersn");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		JSONUser.setFirstPassword(
+			agreeToTermsAndAnswerReminderQuery = "true",
+			requireReset = "false",
+			userEmailAddress = "userea@liferay.com");
 
-		User.editPasswordCP(
-			userEmailAddress = "userea@liferay.com",
-			userScreenName = "usersn");
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "User Groups");
-
-		UserGroup.addCP(userGroupName = "UG UserGroup Name");
+		JSONUserGroup.addUserGroup(
+			userGroupDescription = "UG UserGroup Name Description",
+			userGroupName = "UG UserGroup Name");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
@@ -315,11 +316,9 @@ definition {
 
 		UserGroup.addSiteCP(
 			userGroupName = "UG UserGroup Name",
-			userGroupSite = "Community Site");
+			userGroupSite = "Site Template Name");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Profile");
-
-		var key_pageName = "Home";
 
 		AssertTextPresent(
 			locator1 = "Home#PAGE_1",
@@ -331,7 +330,7 @@ definition {
 
 		AssertTextPresent(
 			locator1 = "Home#PAGE_3",
-			value1 = "Wiki");
+			value1 = "Wiki Page Name");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Dashboard");
 
@@ -348,7 +347,7 @@ definition {
 		if (IsElementPresent(locator1 = "Home#PAGE_3")) {
 			AssertTextNotEquals(
 				locator1 = "Home#PAGE_3",
-				value1 = "Wiki");
+				value1 = "Wiki Page Name");
 		}
 
 		User.logoutPG();
@@ -358,8 +357,6 @@ definition {
 			userEmailAddress = "userea@liferay.com");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Profile");
-
-		var key_pageName = "Home";
 
 		AssertTextPresent(
 			locator1 = "Home#PAGE_1",
@@ -374,7 +371,7 @@ definition {
 		if (IsElementPresent(locator1 = "Home#PAGE_3")) {
 			AssertTextNotEquals(
 				locator1 = "Home#PAGE_3",
-				value1 = "Wiki");
+				value1 = "Wiki Page Name");
 		}
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Dashboard");
@@ -392,7 +389,7 @@ definition {
 		if (IsElementPresent(locator1 = "Home#PAGE_3")) {
 			AssertTextNotEquals(
 				locator1 = "Home#PAGE_3",
-				value1 = "Wiki");
+				value1 = "Wiki Page Name");
 		}
 
 		User.logoutPG();
@@ -418,8 +415,6 @@ definition {
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Profile");
 
-		var key_pageName = "Home";
-
 		AssertTextPresent(
 			locator1 = "Home#PAGE_1",
 			value1 = "My Profile");
@@ -430,7 +425,7 @@ definition {
 
 		AssertTextPresent(
 			locator1 = "Home#PAGE_3",
-			value1 = "Wiki");
+			value1 = "Wiki Page Name");
 
 		UserBar.gotoDropdownItem(dropdownItem = "My Dashboard");
 
@@ -447,7 +442,7 @@ definition {
 		if (IsElementPresent(locator1 = "Home#PAGE_3")) {
 			AssertTextNotEquals(
 				locator1 = "Home#PAGE_3",
-				value1 = "Wiki");
+				value1 = "Wiki Page Name");
 		}
 
 		User.logoutPG();

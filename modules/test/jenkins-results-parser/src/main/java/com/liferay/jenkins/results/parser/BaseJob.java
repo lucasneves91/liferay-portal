@@ -14,11 +14,19 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.test.clazz.group.BatchTestClassGroup;
+import com.liferay.jenkins.results.parser.test.clazz.group.FunctionalBatchTestClassGroup;
+import com.liferay.jenkins.results.parser.test.clazz.group.FunctionalSegmentTestClassGroup;
+import com.liferay.jenkins.results.parser.test.clazz.group.SegmentTestClassGroup;
+import com.liferay.jenkins.results.parser.test.clazz.group.TestClassGroupFactory;
+
 import java.io.File;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,6 +40,16 @@ import org.json.JSONObject;
  * @author Michael Hashimoto
  */
 public abstract class BaseJob implements Job {
+
+	@Override
+	public Set<String> getBatchNames() {
+		return getFilteredBatchNames(getRawBatchNames());
+	}
+
+	@Override
+	public List<BatchTestClassGroup> getBatchTestClassGroups() {
+		return getBatchTestClassGroups(getRawBatchNames());
+	}
 
 	@Override
 	public List<Build> getBuildHistory(JenkinsMaster jenkinsMaster) {
@@ -57,6 +75,20 @@ public abstract class BaseJob implements Job {
 	}
 
 	@Override
+	public BuildProfile getBuildProfile() {
+		return BuildProfile.PORTAL;
+	}
+
+	@Override
+	public Set<String> getDistTypesExcludingTomcat() {
+		Set<String> distTypesExcludingTomcat = new TreeSet<>(getDistTypes());
+
+		distTypesExcludingTomcat.remove("tomcat");
+
+		return distTypesExcludingTomcat;
+	}
+
+	@Override
 	public String getJobName() {
 		return _jobName;
 	}
@@ -78,6 +110,131 @@ public abstract class BaseJob implements Job {
 	}
 
 	@Override
+	public Set<String> getSegmentNames() {
+		return getFilteredSegmentNames(getRawBatchNames());
+	}
+
+	@Override
+	public List<SegmentTestClassGroup> getSegmentTestClassGroups() {
+		return getSegmentTestClassGroups(getRawBatchNames());
+	}
+
+	@Override
+	public String getTestPropertiesContent() {
+		Map<String, Properties> propertiesMap = new HashMap<>();
+
+		List<BatchTestClassGroup> batchTestClassGroups =
+			getBatchTestClassGroups();
+
+		if (this instanceof BatchDependentJob) {
+			BatchDependentJob batchDependentJob = (BatchDependentJob)this;
+
+			batchTestClassGroups.addAll(
+				batchDependentJob.getDependentBatchTestClassGroups());
+		}
+
+		for (BatchTestClassGroup batchTestClassGroup : batchTestClassGroups) {
+			Properties batchProperties = new Properties();
+
+			batchProperties.setProperty(
+				"test.batch.maximum.slaves.per.host",
+				String.valueOf(batchTestClassGroup.getMaximumSlavesPerHost()));
+
+			batchProperties.setProperty(
+				"test.batch.minimum.slave.ram",
+				String.valueOf(batchTestClassGroup.getMinimumSlaveRAM()));
+
+			if (batchTestClassGroup instanceof FunctionalBatchTestClassGroup) {
+				FunctionalBatchTestClassGroup functionalBatchTestClassGroup =
+					(FunctionalBatchTestClassGroup)batchTestClassGroup;
+
+				String relevantTestBatchRunPropertyQuery =
+					functionalBatchTestClassGroup.
+						getRelevantTestBatchRunPropertyQuery();
+
+				if (relevantTestBatchRunPropertyQuery != null) {
+					batchProperties.setProperty(
+						"test.batch.run.property.query",
+						relevantTestBatchRunPropertyQuery);
+				}
+			}
+			else {
+				batchProperties.setProperty(
+					"test.batch.size",
+					String.valueOf(batchTestClassGroup.getAxisCount()));
+			}
+
+			propertiesMap.put(
+				batchTestClassGroup.getBatchName(), batchProperties);
+
+			for (int i = 0; i < batchTestClassGroup.getSegmentCount(); i++) {
+				Properties segmentProperties = new Properties();
+
+				SegmentTestClassGroup segmentTestClassGroup =
+					batchTestClassGroup.getSegmentTestClassGroup(i);
+
+				segmentProperties.setProperty(
+					"test.batch.maximum.slaves.per.host",
+					String.valueOf(
+						segmentTestClassGroup.getMaximumSlavesPerHost()));
+
+				segmentProperties.setProperty(
+					"test.batch.minimum.slave.ram",
+					String.valueOf(segmentTestClassGroup.getMinimumSlaveRAM()));
+
+				segmentProperties.setProperty(
+					"test.batch.name", segmentTestClassGroup.getBatchName());
+
+				segmentProperties.setProperty(
+					"test.batch.size",
+					String.valueOf(segmentTestClassGroup.getAxisCount()));
+
+				String testCasePropertiesContent =
+					segmentTestClassGroup.getTestCasePropertiesContent();
+
+				if (testCasePropertiesContent != null) {
+					segmentProperties.setProperty(
+						"test.case.properties", testCasePropertiesContent);
+				}
+
+				if (segmentTestClassGroup instanceof
+						FunctionalSegmentTestClassGroup) {
+
+					segmentProperties.setProperty(
+						"run.test.case.method.group", String.valueOf(i));
+				}
+
+				propertiesMap.put(
+					segmentTestClassGroup.getSegmentName(), segmentProperties);
+			}
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		for (Map.Entry<String, Properties> propertiesEntry :
+				propertiesMap.entrySet()) {
+
+			Properties properties = propertiesEntry.getValue();
+
+			for (String propertyName : properties.stringPropertyNames()) {
+				sb.append(propertyName);
+				sb.append("[");
+				sb.append(propertiesEntry.getKey());
+				sb.append("]=");
+				sb.append(properties.getProperty(propertyName));
+				sb.append("\n");
+			}
+		}
+
+		return sb.toString();
+	}
+
+	@Override
+	public boolean isValidationRequired() {
+		return false;
+	}
+
+	@Override
 	public void readJobProperties() {
 		_jobProperties.clear();
 
@@ -89,6 +246,63 @@ public abstract class BaseJob implements Job {
 
 	protected BaseJob(String jobName) {
 		_jobName = jobName;
+	}
+
+	protected List<BatchTestClassGroup> getBatchTestClassGroups(
+		Set<String> rawBatchNames) {
+
+		if ((rawBatchNames == null) || rawBatchNames.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<BatchTestClassGroup> batchTestClassGroups = new ArrayList<>();
+
+		for (String batchName : rawBatchNames) {
+			BatchTestClassGroup batchTestClassGroup =
+				TestClassGroupFactory.newBatchTestClassGroup(
+					batchName, _getBatchBuildProfile(), this);
+
+			if (batchTestClassGroup.getAxisCount() <= 0) {
+				continue;
+			}
+
+			batchTestClassGroups.add(batchTestClassGroup);
+		}
+
+		return batchTestClassGroups;
+	}
+
+	protected Set<String> getFilteredBatchNames(Set<String> rawBatchNames) {
+		Set<String> batchNames = new TreeSet<>();
+
+		for (BatchTestClassGroup batchTestClassGroup :
+				getBatchTestClassGroups(rawBatchNames)) {
+
+			batchNames.add(batchTestClassGroup.getBatchName());
+		}
+
+		return batchNames;
+	}
+
+	protected Set<String> getFilteredSegmentNames(Set<String> rawBatchNames) {
+		Set<String> segmentNames = new TreeSet<>();
+
+		for (BatchTestClassGroup batchTestClassGroup :
+				getBatchTestClassGroups(rawBatchNames)) {
+
+			for (int i = 0; i < batchTestClassGroup.getSegmentCount(); i++) {
+				SegmentTestClassGroup segmentTestClassGroup =
+					batchTestClassGroup.getSegmentTestClassGroup(i);
+
+				if (segmentTestClassGroup.getAxisCount() <= 0) {
+					continue;
+				}
+
+				segmentNames.add(batchTestClassGroup.getBatchName() + "/" + i);
+			}
+		}
+
+		return segmentNames;
 	}
 
 	protected JSONObject getJobJSONObject(
@@ -117,6 +331,31 @@ public abstract class BaseJob implements Job {
 		}
 	}
 
+	protected abstract Set<String> getRawBatchNames();
+
+	protected List<SegmentTestClassGroup> getSegmentTestClassGroups(
+		Set<String> rawBatchNames) {
+
+		List<SegmentTestClassGroup> segmentTestClassGroups = new ArrayList<>();
+
+		for (BatchTestClassGroup batchTestClassGroup :
+				getBatchTestClassGroups(rawBatchNames)) {
+
+			for (int i = 0; i < batchTestClassGroup.getSegmentCount(); i++) {
+				SegmentTestClassGroup segmentTestClassGroup =
+					batchTestClassGroup.getSegmentTestClassGroup(i);
+
+				if (segmentTestClassGroup.getAxisCount() <= 0) {
+					continue;
+				}
+
+				segmentTestClassGroups.add(segmentTestClassGroup);
+			}
+		}
+
+		return segmentTestClassGroups;
+	}
+
 	protected Set<String> getSetFromString(String string) {
 		Set<String> set = new TreeSet<>();
 
@@ -136,6 +375,19 @@ public abstract class BaseJob implements Job {
 	}
 
 	protected final List<File> jobPropertiesFiles = new ArrayList<>();
+
+	private BatchTestClassGroup.BuildProfile _getBatchBuildProfile() {
+		BuildProfile buildProfile = getBuildProfile();
+
+		if (buildProfile == null) {
+			buildProfile = BuildProfile.PORTAL;
+		}
+
+		String buildProfileString = buildProfile.toString();
+
+		return BatchTestClassGroup.BuildProfile.valueOf(
+			buildProfileString.toUpperCase());
+	}
 
 	private final String _jobName;
 	private final Properties _jobProperties = new Properties();

@@ -49,7 +49,7 @@ GradleStylingCheck | .gradle | Applies rules to enforce consisteny in code style
 HTMLEmptyLinesCheck | .html | Finds missing and unnecessary empty lines. |
 HTMLWhitespaceCheck | .html | Finds missing and unnecessary whitespace in `.html` files. |
 InstanceofOrderCheck | .java, .jsp, .jspf, .tag, .tpl or .vm | Check the order of `instanceof` calls. |
-JSONStylingCheck | .json or .npmbridgerc | Applies rules to enforce consisteny in code style. |
+JSONStylingCheck | .ipynb, .json or .npmbridgerc | Applies rules to enforce consisteny in code style. |
 [JSONUtilCheck](checks/json_util_check.markdown#jsonutilcheck) | .java, .jsp, .jspf, .tag, .tpl or .vm | Checks for utilization of class `JSONUtil`. |
 JSPEmptyLinesCheck | .jsp, .jspf, .tag, .tpl or .vm | Finds missing and unnecessary empty lines. |
 JSPExceptionOrderCheck | .jsp, .jspf, .tag, .tpl or .vm | Checks the order of exceptions in `.jsp` files. |
@@ -132,6 +132,8 @@ SlantedQuotesCheck | | Finds `slanted quote` (`\u201a`, `\u201b`, `\u201c`, `\u2
 SoyEmptyLinesCheck | .soy | Finds missing and unnecessary empty lines. |
 [StringLiteralEqualityCheck](https://checkstyle.sourceforge.io/config_coding.html#StringLiteralEquality) | .java, .jsp, .jspf, .tag, .tpl or .vm | Checks that string literals are not used with == or !=. |
 TLDElementOrderCheck | .tld | Checks the order of attributers in `.tld` file. |
+TXTEmptyLinesCheck | .txt | Finds missing and unnecessary empty lines. |
+TXTStylingCheck | .txt | Applies rules to enforce consisteny in code style. |
 TernaryOperatorCheck | .java, .jsp, .jspf, .tag, .tpl or .vm | Finds use of ternary operator in `java` files (use if statement instead). |
 [UnnecessaryParenthesesCheck](https://checkstyle.sourceforge.io/config_coding.html#UnnecessaryParentheses) | .java, .jsp, .jspf, .tag, .tpl or .vm | Checks if unnecessary parentheses are used in a statement or expression. |
 [WhitespaceAfterCheck](https://checkstyle.sourceforge.io/config_whitespace.html#WhitespaceAfter) | .java, .jsp, .jspf, .tag, .tpl or .vm | Checks that a token is followed by whitespace, with the exception that it does not check for whitespace after the semicolon of an empty for iterator. |

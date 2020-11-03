@@ -14,6 +14,9 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.liferay.jenkins.results.parser.test.clazz.group.BatchTestClassGroup;
+import com.liferay.jenkins.results.parser.test.clazz.group.SegmentTestClassGroup;
+
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -25,9 +28,15 @@ public interface Job {
 
 	public Set<String> getBatchNames();
 
+	public List<BatchTestClassGroup> getBatchTestClassGroups();
+
 	public List<Build> getBuildHistory(JenkinsMaster jenkinsMaster);
 
+	public BuildProfile getBuildProfile();
+
 	public Set<String> getDistTypes();
+
+	public Set<String> getDistTypesExcludingTomcat();
 
 	public String getJobName();
 
@@ -37,6 +46,39 @@ public interface Job {
 
 	public String getJobURL(JenkinsMaster jenkinsMaster);
 
+	public Set<String> getSegmentNames();
+
+	public List<SegmentTestClassGroup> getSegmentTestClassGroups();
+
+	public String getTestPropertiesContent();
+
+	public boolean isValidationRequired();
+
 	public void readJobProperties();
+
+	public static enum BuildProfile {
+
+		DXP {
+
+			private static final String _TEXT = "dxp";
+
+			@Override
+			public String toString() {
+				return _TEXT;
+			}
+
+		},
+		PORTAL {
+
+			private static final String _TEXT = "portal";
+
+			@Override
+			public String toString() {
+				return _TEXT;
+			}
+
+		}
+
+	}
 
 }

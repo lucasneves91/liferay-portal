@@ -970,9 +970,12 @@ definition {
 			userEmailAddress = "test@liferay.com");*/
 	}
 
-	@ignore
 	@priority = "4"
 	test RolesSitesPermissionsInheritance {
+		property custom.properties = "jsonws.web.service.paths.excludes=";
+
+		var siteName = TestCase.getSiteName(siteName = "${siteName}");
+
 		for (var userNumber : list "1,2,3") {
 			JSONUser.addUser(
 				userEmailAddress = "userea${userNumber}@liferay.com",
@@ -980,79 +983,53 @@ definition {
 				userLastName = "userln${userNumber}",
 				userScreenName = "usersn${userNumber}");
 
-			ApplicationsMenu.gotoPortlet(
-				category = "Users",
-				panel = "Control Panel",
-				portlet = "Users and Organizations");
-
-			User.editPasswordCP(
-				userEmailAddress = "userea${userNumber}@liferay.com",
-				userScreenName = "usersn${userNumber}");
+			JSONUser.setFirstPassword(
+				agreeToTermsAndAnswerReminderQuery = "true",
+				requireReset = "false",
+				userEmailAddress = "userea${userNumber}@liferay.com");
 		}
 
+		JSONOrganization.addOrganization(organizationName = "Organization Name 1");
+
+		JSONOrganization.addOrganization(organizationName = "Organization Name 2");
+
+		SiteTemplates.addCP(siteTemplateName = "Site Template Name");
+
+		SiteTemplates.addSitePageViaSiteTemplateCP(
+			pageName = "MB Page",
+			siteTemplateName = "Site Template Name");
+
+		SiteTemplatesNavigator.gotoSiteTemplatesPage(
+			pageName = "MB Page",
+			siteName = "${siteName}",
+			siteTemplateName = "Site Template Name");
+
+		Portlet.addPG(
+			defaultURL = "false",
+			portletName = "Message Boards");
+
+		Close.closeAndSelectWindow(locator1 = "Site Templates - ${siteName}");
+
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
 			panel = "Control Panel",
 			portlet = "Users and Organizations");
 
-		Organization.addCP(
-			orgName = "Organization Name 1",
-			orgType = "Organization");
+		UsersAndOrganizationsNavigator.gotoOrganizations();
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		Organization.addCP(
+		Organization.addSiteCP(
 			orgName = "Organization Name 2",
-			orgType = "Organization");
+			siteTemplateName = "Site Template Name");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		JSONOrganization.addOrganization(organizationName = "Organization Name 3");
 
-		UsersAndOrganizationsNavigator.gotoOrganizations();
+		JSONOrganization.assignUserToOrganization(
+			organizationName = "Organization Name 1",
+			userEmailAddress = "userea1@liferay.com");
 
-		Organization.addSiteCP(orgName = "Organization Name 2");
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		Organization.addCP(
-			orgName = "Organization Name 3",
-			orgType = "Organization");
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		UsersAndOrganizationsNavigator.gotoOrganizations();
-
-		Organization.addMemberCP(
-			orgName = "Organization Name 1",
-			userFirstName = "userfn1",
-			userLastName = "userln1",
-			userName = "userfn1 userln1",
-			userScreenName = "usersn1");
-
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
-
-		UsersAndOrganizationsNavigator.gotoOrganizations();
-
-		Organization.addMemberCP(
-			orgName = "Organization Name 2",
-			userFirstName = "userfn2",
-			userLastName = "userln2",
-			userName = "userfn2 userln2",
-			userScreenName = "usersn2");
+		JSONOrganization.assignUserToOrganization(
+			organizationName = "Organization Name 2",
+			userEmailAddress = "userea2@liferay.com");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
@@ -1068,30 +1045,21 @@ definition {
 			userLastName = "userln2",
 			userScreenName = "usersn2");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "Users and Organizations");
+		JSONOrganization.assignUserToOrganization(
+			organizationName = "Organization Name 3",
+			userEmailAddress = "userea3@liferay.com");
 
-		UsersAndOrganizationsNavigator.gotoOrganizations();
+		JSONUserGroup.addUserGroup(
+			userGroupDescription = "UG UserGroup1 Description",
+			userGroupName = "UG UserGroup1 Name");
 
-		Organization.addMemberCP(
-			orgName = "Organization Name 3",
-			userFirstName = "userfn3",
-			userLastName = "userln3",
-			userName = "userfn3 userln3",
-			userScreenName = "usersn3");
+		JSONUserGroup.addUserGroup(
+			userGroupDescription = "UG UserGroup2 Description",
+			userGroupName = "UG UserGroup2 Name");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Users",
-			panel = "Control Panel",
-			portlet = "User Groups");
-
-		UserGroup.addCP(userGroupName = "UG UserGroup1 Name");
-
-		UserGroup.addCP(userGroupName = "UG UserGroup2 Name");
-
-		UserGroup.addCP(userGroupName = "UG UserGroup3 Name");
+		JSONUserGroup.addUserGroup(
+			userGroupDescription = "UG UserGroup3 Description",
+			userGroupName = "UG UserGroup3 Name");
 
 		ApplicationsMenu.gotoPortlet(
 			category = "Users",
@@ -1120,18 +1088,11 @@ definition {
 			userGroupName = "UG UserGroup3 Name",
 			userScreenName = "usersn3");
 
-		ApplicationsMenu.gotoPortlet(
-			category = "Sites",
-			panel = "Control Panel",
-			portlet = "Sites");
+		JSONGroup.addGroup(groupName = "Site Name");
 
-		Site.addBlankCP(siteName = "Site Name");
-
-		ProductMenu.gotoPortlet(
-			category = "Site Builder",
-			portlet = "Pages");
-
-		SitePages.addPublicPage(pageName = "Asset Publisher Page");
+		JSONLayout.addPublicLayout(
+			groupName = "Site Name",
+			layoutName = "Asset Publisher Page");
 
 		JSONRole.addSiteRole(
 			roleKey = "Movie Blogger Name",
@@ -1149,51 +1110,33 @@ definition {
 			roleTitle = "Movie Blogger Name",
 			roleType = "site");
 
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_TO_PAGE",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Movie Blogger Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "VIEW",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Movie Blogger Name",
-			roleType = "site");
+		for (var resourceActionIndex : list "VIEW,ADD_TO_PAGE") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
+				roleTitle = "Movie Blogger Name",
+				roleType = "site");
+		}
 
 		JSONRole.addSiteRole(
 			roleKey = "Music Fan Name",
 			roleTitle = "Music Fan Name");
 
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "VIEW",
-			resourceName = "com.liferay.message.boards",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
+		for (var resourceActionIndex : list "VIEW,ADD_CATEGORY,ADD_MESSAGE") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.message.boards",
+				roleTitle = "Music Fan Name",
+				roleType = "site");
+		}
 
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_CATEGORY",
-			resourceName = "com.liferay.message.boards",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_MESSAGE",
-			resourceName = "com.liferay.message.boards",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "VIEW",
-			resourceName = "com.liferay.message.boards.kernel.model.MBCategory",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_MESSAGE",
-			resourceName = "com.liferay.message.boards.kernel.model.MBCategory",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
+		for (var resourceActionIndex : list "VIEW,ADD_MESSAGE") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com.liferay.message.boards.kernel.model.MBCategory",
+				roleTitle = "Music Fan Name",
+				roleType = "site");
+		}
 
 		Permissions.definePermissionViaJSONAPI(
 			resourceAction = "VIEW",
@@ -1201,17 +1144,13 @@ definition {
 			roleTitle = "Music Fan Name",
 			roleType = "site");
 
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "VIEW",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_TO_PAGE",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Music Fan Name",
-			roleType = "site");
+		for (var resourceActionIndex : list "VIEW,ADD_TO_PAGE") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
+				roleTitle = "Music Fan Name",
+				roleType = "site");
+		}
 
 		JSONRole.addSiteRole(
 			roleKey = "Sports Journalist Name",
@@ -1233,17 +1172,13 @@ definition {
 				roleType = "site");
 		}
 
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "VIEW",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Sports Journalist Name",
-			roleType = "site");
-
-		Permissions.definePermissionViaJSONAPI(
-			resourceAction = "ADD_TO_PAGE",
-			resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
-			roleTitle = "Sports Journalist Name",
-			roleType = "site");
+		for (var resourceActionIndex : list "VIEW,ADD_TO_PAGE") {
+			Permissions.definePermissionViaJSONAPI(
+				resourceAction = "${resourceActionIndex}",
+				resourceName = "com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet",
+				roleTitle = "Sports Journalist Name",
+				roleType = "site");
+		}
 
 		Navigator.openSiteURL(siteName = "Site Name");
 
@@ -1322,15 +1257,13 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		var key_portletTitleName = "Message Boards";
-
 		AssertTextEquals(
+			key_portletTitleName = "Message Boards",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Message Boards");
 
-		var key_portletTitleName = "Asset Publisher";
-
 		AssertTextEquals(
+			key_portletTitleName = "Asset Publisher",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Asset Publisher");
 
@@ -1348,15 +1281,13 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		var key_portletTitleName = "Message Boards";
-
 		AssertTextEquals(
+			key_portletTitleName = "Message Boards",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Message Boards");
 
-		var key_portletTitleName = "Asset Publisher";
-
 		AssertTextEquals(
+			key_portletTitleName = "Asset Publisher",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Asset Publisher");
 
@@ -1366,11 +1297,12 @@ definition {
 			entryContent = "This is a movie blog by usersn2",
 			entryTitle = "Movie Blog");
 
-		Navigator.openSiteURL(siteName = "Organization Name 2");
-
-		var key_portletTitleName = "Message Boards";
+		Navigator.gotoSitePage(
+			pageName = "MB Page",
+			siteName = "Organization Name 2");
 
 		AssertTextEquals(
+			key_portletTitleName = "Message Boards",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Message Boards");
 
@@ -1392,15 +1324,13 @@ definition {
 			pageName = "Asset Publisher Page",
 			siteName = "Site Name");
 
-		var key_portletTitleName = "Message Boards";
-
 		AssertTextEquals(
+			key_portletTitleName = "Message Boards",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Message Boards");
 
-		var key_portletTitleName = "Asset Publisher";
-
 		AssertTextEquals(
+			key_portletTitleName = "Asset Publisher",
 			locator1 = "Portlet#SPECIFIC_TITLE",
 			value1 = "Asset Publisher");
 

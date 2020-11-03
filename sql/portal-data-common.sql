@@ -692,6 +692,12 @@ insert into ListType (listTypeId, name, type_) values (10012, 'intranet', 'com.l
 insert into ListType (listTypeId, name, type_) values (10013, 'public', 'com.liferay.portal.kernel.model.Account.website');
 
 ##
+## List types for addresses
+##
+
+insert into ListType (listTypeId, name, type_) values (13000, 'phone-number', 'com.liferay.portal.kernel.model.Address.phone');
+
+##
 ## List types for contacts
 ##
 

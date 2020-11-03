@@ -217,6 +217,7 @@ renderResponse.setTitle(headerTitle);
 			</liferay-ui:error>
 
 			<liferay-ui:error exception="<%= FileNameException.class %>" message="please-enter-a-file-with-a-valid-file-name" />
+			<liferay-ui:error exception="<%= FileNameExtensionException.class %>" message="the-file-name-cannot-be-empty-or-without-extension" />
 			<liferay-ui:error exception="<%= NoSuchFolderException.class %>" message="please-enter-a-valid-folder" />
 
 			<liferay-ui:error exception="<%= SourceFileNameException.class %>">
@@ -313,7 +314,9 @@ renderResponse.setTitle(headerTitle);
 
 					<%@ include file="/document_library/edit_file_entry_picker.jspf" %>
 
-					<aui:input label="name" name="title" />
+					<aui:input label="title" name="title" />
+
+					<aui:input label="file-name" name="fileName" />
 
 					<c:if test="<%= (folder == null) || folder.isSupportsMetadata() %>">
 						<aui:input name="description" />
@@ -644,20 +647,29 @@ renderResponse.setTitle(headerTitle);
 		});
 	}
 
-	function <portlet:namespace />updateTitle() {
+	function <portlet:namespace />updateFileNameAndTitle() {
 		var titleElement = document.getElementById('<portlet:namespace />title');
+		var fileNameElement = document.getElementById(
+			'<portlet:namespace />fileName'
+		);
+		var fileElement = document.getElementById('<portlet:namespace />file');
 
-		if (titleElement && !titleElement.value) {
-			var fileElement = document.getElementById('<portlet:namespace />file');
+		if (fileElement && fileElement.value) {
+			var fileFileName = fileElement.value.replace(/^.*[\\\/]/, '');
 
-			if (fileElement && fileElement.value) {
-				titleElement.value = fileElement.value.replace(/^.*[\\\/]/, '');
+			if (titleElement && !titleElement.value) {
+				titleElement.value = fileFileName.replace(/\.[^.]*$/, '');
+			}
+
+			if (fileNameElement && !fileNameElement.value) {
+				fileNameElement.value = fileFileName;
 			}
 		}
 
 		var formComponent = Liferay.Form.get('<portlet:namespace />fm');
 
 		formComponent.formValidator.validateField('<portlet:namespace />title');
+		formComponent.formValidator.validateField('<portlet:namespace />fileName');
 	}
 </script>
 

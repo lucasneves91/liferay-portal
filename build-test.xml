@@ -3920,6 +3920,12 @@ go</echo>
 						<var name="app.server.tomcat.version" value="9.0.33" />
 					</then>
 				</elseif>
+				<elseif>
+					<equals arg1="@{liferay.portal.bundle}" arg2="7.3.10" />
+					<then>
+						<var name="app.server.tomcat.version" value="9.0.37" />
+					</then>
+				</elseif>
 			</if>
 
 			<var name="app.server.tomcat.dir" value="${app.server.parent.dir}/tomcat-${app.server.tomcat.version}" />
@@ -4276,6 +4282,15 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 						</or>
 						<then>
 							<echo file="${test.app.server.deploy.dir}/ROOT.war.dodeploy"></echo>
+						</then>
+					</if>
+
+					<get-testcase-property property.name="disable.commerce" />
+
+					<if>
+						<equals arg1="${disable.commerce}" arg2="true" />
+						<then>
+							<delete failonerror="false" file="${test.app.server.dir}/deploy/portal-commerce-license.xml" />
 						</then>
 					</if>
 
@@ -5438,9 +5453,14 @@ war.path=${app.server.portal.dir}/</echo>
 
 			<echo>${app.server.waiting.url} has loaded</echo>
 
+			<get-testcase-property property.name="disable.commerce" />
+
 			<if>
 				<and>
 					<equals arg1="${build.profile}" arg2="dxp" />
+					<not>
+						<equals arg1="${disable.commerce}" arg2="true" />
+					</not>
 					<or>
 						<equals arg1="${env.CI_TEST_SUITE}" arg2="portal-fixpack-release" />
 						<equals arg1="${env.CI_TEST_SUITE}" arg2="portal-hotfix-release" />
@@ -9167,7 +9187,7 @@ auto.deploy.dest.dir=C:/WINDOWS/system32/config/systemprofile/liferay/websphere-
 			</then>
 			<else>
 				<echo append="true" file="${test.ext.properties.file}">
-					test.base.dir.name=test/
+					test.base.dir.name=${basedir.unix}/portal-web/test/functional/com/liferay/portalweb/
 				</echo>
 			</else>
 		</if>

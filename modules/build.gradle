@@ -109,7 +109,7 @@ if (FileUtil.exists(rootProject, "private/yarn.lock")) {
 
 buildDir = new File(rootDir.parentFile, "build")
 
-for (String gradleVersion in ["5.6.4"]) {
+for (String gradleVersion in ["6.6.1"]) {
 	String gradleDistributionURL = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 	String suffix = gradleVersion.replace(".", "")
 
@@ -490,6 +490,10 @@ gradle.beforeProject {
 			}
 
 			if (System.getenv("JENKINS_HOME")) {
+				buildCSS {
+					jvmArgs "-Xss4m"
+				}
+
 				startTestableTomcat {
 					deleteLiferayHome = false
 				}

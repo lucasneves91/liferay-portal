@@ -60,6 +60,12 @@ jest.mock(
 	() => ({
 		config: {
 			adaptiveMediaEnabled: true,
+			availableViewportSizes: {
+				desktop: {
+					maxWidth: 1920,
+					minWidth: 992,
+				},
+			},
 			defaultLanguageId: 'en',
 		},
 	})
